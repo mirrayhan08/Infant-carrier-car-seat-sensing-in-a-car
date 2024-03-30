@@ -12,53 +12,44 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.utils.class_weight import compute_class_weight
-from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import accuracy_score
 import joblib
-
-# from google.colab import drive
-# drive.mount('/content/drive')
+from google.colab import drive
+drive.mount('/content/drive')
 
 print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
 
 with tf.device('/GPU:0'):
-    file = "E:\\01 - FRANKFURT LECTURE SLIDE\\Machine Learning\\vehicale_baby_seat_detection\\features.csv"
-    dataset = pd.read_csv(file)
+  file = "/content/drive/My Drive/dataset_6k.csv"
+  dataset = pd.read_csv(file)
 
-    X = dataset.drop('Label', axis=1)
-    y = dataset['Label']
+  X = dataset.drop('label', axis=1)
+  y = dataset['label']
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=42)
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=42)
 
-    X_test, X_val, y_test, y_val = train_test_split(X_test, y_test, test_size=0.5, random_state=42)
+  X_test, X_val, y_test, y_val = train_test_split(X_test, y_test, test_size=0.5, random_state=42)
 
-    scaler = StandardScaler()
+  X_train_np = X_train.values
+  X_test_np = X_test.values
+  X_val_np = X_val.values
 
-    X_train = scaler.fit_transform(X_train)
-    X_test = scaler.transform(X_test)
-    X_val = scaler.transform(X_val)
+  X_train = X_train_np.reshape(X_train.shape[0], X_train.shape[1], 1)
+  X_test = X_test_np.reshape(X_test.shape[0], X_test.shape[1], 1)
+  X_val = X_val_np.reshape(X_val.shape[0], X_test.shape[1], 1)
 
-    # X_train_np = X_train.values
-    # X_test_np = X_test.values
-    # X_val_np = X_val.values
-    #
-    # X_train = X_train_np.reshape(X_train.shape[0], X_train.shape[1], 1)
-    # X_test = X_test_np.reshape(X_test.shape[0], X_test.shape[1], 1)
-    # X_val = X_val_np.reshape(X_val.shape[0], X_test.shape[1], 1)
+  classes = np.array([0,1])
 
-    classes = np.array([0, 1])
-
-    class_weights = compute_class_weight('balanced', classes=classes, y=y_train)
+  class_weights = compute_class_weight('balanced', classes=classes, y=y_train)
 
 # Define the CNN architecture
 model = tf.keras.models.Sequential([
-    tf.keras.layers.Conv1D(64, 3, activation='relu', input_shape=[11, 1]),
+    tf.keras.layers.Conv1D(32, 3, activation='relu', input_shape=[X_train.shape[1], 1]),
     tf.keras.layers.MaxPooling1D(pool_size=2),
-    tf.keras.layers.Conv1D(64, 3, activation='relu'),
+    tf.keras.layers.Conv1D(32, 3, activation='relu'),
     tf.keras.layers.MaxPooling1D(pool_size=2),
-    # tf.keras.layers.Conv1D(32, 3, activation='relu'),
-    # tf.keras.layers.MaxPooling1D(pool_size=2),
     tf.keras.layers.Flatten(),
-    tf.keras.layers.Dense(32, activation='relu'),
+    tf.keras.layers.Dense(64, activation='relu'),
     tf.keras.layers.Dense(2, activation='softmax')
 ])
 
@@ -68,10 +59,9 @@ model.compile(optimizer='adam',
               metrics=['accuracy'])
 
 # Train the model with class weights
-model.fit(X_train, y_train, epochs=300, batch_size=3000, validation_data=(X_test, y_test))
+model.fit(X_train, y_train, epochs=25, batch_size=600, validation_data=(X_test, y_test))
 
-saved_model = joblib.dump(model,
-                          "E:\\01 - FRANKFURT LECTURE SLIDE\\Machine Learning\\vehicale_baby_seat_detection\\CNN_with_feature.joblib")
+saved_model = joblib.dump(model, "/content/drive/My Drive/CNN_model.joblib")
 
 loss, accuracy = model.evaluate(X_test, y_test)
 
