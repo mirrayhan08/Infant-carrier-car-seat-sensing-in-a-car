@@ -98,10 +98,12 @@ Model is trained with both raw_signal and features. For CNN we used 2 layers of 
 We had two output nodes for two classes. for both models data was scalled using `StandardScaling` from `Sickit-learn`. For each conv
 layers we used 64 filters. We used 300 epochs and batch-size 3000. We got accuracy of 0.9979671835899353 and the loss was 
 0.010772799141705036. We got this accuracy with feature dataset.
-`###########PIC_1 GOES HERE###############`
+![pic_1](https://github.com/mirrayhan08/Infant-carrier-car-seat-sensing-in-a-car/assets/51412523/2b3d5d02-75cc-46ea-9c83-f7ee58149fef)
+
 ####### Confusion-Matrix
 As we can see in confusion matrix The output prediction and real value have mostly accurate.
-`################PIC_2 GOES HERE###################`
+![pic_2](https://github.com/mirrayhan08/Infant-carrier-car-seat-sensing-in-a-car/assets/51412523/8e05ebc5-94ef-4a64-9092-7a1d6fd8d8ba)
+
 ##### SGD
 ```
 params = {
@@ -127,5 +129,6 @@ We used 10 fold cross-validation. After running the model we get best_estimator 
  max_iter=2500, penalty=None". With this parametre setting we get accuracy of `0.8104769351055512`. best_params were- 
  ```{'alpha': 0.01, 'class_weight': 'balanced', 'loss': 'hinge', 'max_iter': 2500, 'penalty': None}```
  
-```###############PIC_3 GOES HERE#################```
+![pic_3](https://github.com/mirrayhan08/Infant-carrier-car-seat-sensing-in-a-car/assets/51412523/50f5ddfd-d1ff-4fb1-9946-0f5c7f8ff823)
+
 
